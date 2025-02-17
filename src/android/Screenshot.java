@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Base64;
 import android.view.TextureView;
@@ -43,7 +44,21 @@ public class Screenshot extends CordovaPlugin {
     private String mFileName;
     private Integer mQuality;
 
-    protected final static String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    protected static String[] PERMISSIONS = {};
+    static {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        PERMISSIONS = new String[]{
+          Manifest.permission.READ_MEDIA_IMAGES,
+          Manifest.permission.READ_MEDIA_AUDIO,
+          Manifest.permission.READ_MEDIA_VIDEO
+        };
+      } else {
+        PERMISSIONS = new String[] {
+          Manifest.permission.READ_EXTERNAL_STORAGE,
+          Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+      }
+    }
     public static final int PERMISSION_DENIED_ERROR = 20;
     public static final int SAVE_SCREENSHOT_SEC = 0;
 
@@ -190,7 +205,7 @@ public class Screenshot extends CordovaPlugin {
 
      public void getScreenshotAsURISync() throws JSONException{
         mQuality = (Integer) mArgs.get(0);
-        
+
         Runnable r = new Runnable(){
             @Override
             public void run() {
