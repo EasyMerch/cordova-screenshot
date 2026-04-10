@@ -236,7 +236,11 @@ public class Screenshot extends CordovaPlugin {
         mArgs = args;
 
         if (action.equals("saveScreenshot")) {
-            if(PermissionHelper.hasPermission(this, PERMISSIONS[0])) {
+            boolean hasAllPermissions = true;
+            for (String permission: PERMISSIONS) {
+                hasAllPermissions = hasAllPermissions && PermissionHelper.hasPermission(this, permission);
+            }
+            if(hasAllPermissions) {
                 saveScreenshot();
             } else {
                 PermissionHelper.requestPermissions(this, SAVE_SCREENSHOT_SEC, PERMISSIONS);
